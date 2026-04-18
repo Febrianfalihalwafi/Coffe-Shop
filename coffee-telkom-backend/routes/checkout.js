@@ -1,68 +1,122 @@
+// routes/checkout.js
 const express = require('express');
-const Cart = require('../models/cart');
-const Transaction = require('../models/transaction');
-const midtrans = require('../config/midtrans');
-const { auth } = require('../middleware/auth');
-
 const router = express.Router();
+const Order = require('../models/order');
+const { protect } = require('../middleware/authMiddleware');
+const { body, validationResult } = require('express-validator');
 
-router.post('/', auth, async (req, res) => {
-  try {
-    const { address } = req.body;
+// Checkout (Create Order from Cart)
+router.post('/',
+    protect,
+    [
+        body('items').isArray().withMessage('Items must be an array'),
+        body('items.*.product').notEmpty().withMessage('Product name is required'),
+        body('items.*.price').isNumeric().withMessage('Price must be a number'),
+        body('items.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+        body('totalAmount').isNumeric().withMessage('Total amount must be a number')
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-    const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty' });
+        const { items, totalAmount } = req.body;
+        const userId = req.user._id;
+
+        try {
+            // Validate totalAmount matches sum of items
+            const calculatedTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
+                return res.status(400).json({ message: 'Total amount does not match item prices' });
+            }
+
+            const order = new Order({
+                user: userId,
+                items,
+                totalAmount,
+                status: 'pending'
+            });
+
+            await order.save();
+
+            res.status(201).json({
+                message: 'Order created successfully',
+                order: {
+                    id: order._id,
+                    totalAmount: order.totalAmount,
+                    status: order.status,
+                    createdAt: order.createdAt
+                }
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Server error' });
+        }
+        // routes/checkout.js (tambahkan ini di bawah route checkout)
+
+const axios = require('axios');
+
+// Create Midtrans Payment
+router.post('/payment',
+    protect,
+    async (req, res) => {
+        const { orderId } = req.body;
+
+        try {
+            const order = await Order.findById(orderId).populate('user');
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            if (order.status !== 'pending') {
+                return res.status(400).json({ message: 'Order is not pending' });
+            }
+
+            // Midtrans API request
+            const midtransUrl = 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+            const auth = Buffer.from(process.env.MIDTRANS_SERVER_KEY + ':').toString('base64');
+
+            const payload = {
+                transaction_details: {
+                    order_id: `ORDER_${orderId}`,
+                    gross_amount: order.totalAmount
+                },
+                customer_details: {
+                    first_name: order.user.name || 'Customer',
+                    email: order.user.email
+                },
+                item_details: order.items.map(item => ({
+                    id: item.product,
+                    price: item.price,
+                    quantity: item.quantity,
+                    name: item.product
+                }))
+            };
+
+            const response = await axios.post(midtransUrl, payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${auth}`
+                }
+            });
+
+            // Simpan transactionId ke order
+            order.transactionId = response.data.token;
+            order.status = 'pending'; // atau 'paid' jika sudah dibayar
+            await order.save();
+
+            res.json({
+                redirect_url: response.data.redirect_url,
+                transaction_id: response.data.token
+            });
+
+        } catch (err) {
+            console.error('Midtrans Error:', err.response?.data || err.message);
+            res.status(500).json({ message: 'Payment failed' });
+        }
     }
-
-    const transaction = new Transaction({
-      userId: req.user._id,
-      items: cart.items.map(item => ({
-        productId: item.productId._id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image
-      })),
-      total: cart.total,
-      address: address,
-      status: 'pending'
-    });
-
-    await transaction.save();
-
-    const parameter = {
-      transaction_details: {
-        order_id: transaction._id.toString(),
-        gross_amount: transaction.total
-      },
-      customer_details: {
-        first_name: req.user.name.split(' ')[0],
-        last_name: req.user.name.split(' ').slice(1).join(' ') || '',
-        email: req.user.email,
-        phone: ''
-      },
-      item_details: cart.items.map(item => ({
-        id: item.productId._id.toString(),
-        price: item.price,
-        quantity: item.quantity,
-        name: item.name
-      }))
-    };
-
-    const snapToken = await midtrans.createTransaction(parameter);
-    transaction.midtransOrderId = snapToken.order_id;
-    transaction.midtransPaymentUrl = snapToken.redirect_url;
-    await transaction.save();
-
-    res.json({
-      transactionId: transaction._id,
-      redirectUrl: snapToken.redirect_url
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+);
+    }
+);
 
 module.exports = router;

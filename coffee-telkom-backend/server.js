@@ -1,34 +1,33 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const passport = require('passport');
+const dotenv = require('dotenv');
+const path = require('path');
+
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Connect DB
-require('./config/db');
-
-// Setup Passport
-require('./config/passport-google');
-require('./config/passport-apple');
-app.use(passport.initialize());
+app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/cart', require('./routes/cart'));
-app.use('/api/menu', require('./routes/menus'));
-app.use('/api/checkout', require('./routes/checkout'));
-app.use('/api/midtrans', require('./routes/midtrans-notification'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/menu', require('./routes/menuRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
+app.use('/api/order', require('./routes/orderRoutes'));
+app.use('/api/payment', require('./routes/paymentRoutes'));
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Coffee Telkom Backend is running!');
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
