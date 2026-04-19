@@ -1,7 +1,7 @@
 // routes/checkout.js
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/order');
+const Order = require('../models/Order');
 const { protect } = require('../middleware/authMiddleware');
 const { body, validationResult } = require('express-validator');
 

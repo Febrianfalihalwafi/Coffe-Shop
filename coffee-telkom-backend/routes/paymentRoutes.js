@@ -3,7 +3,7 @@ const router = express.Router();
 const snap = require('midtrans-client').Snap;
 const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
-const User = require('../models/User');
+const User = require('../models/user');
 
 // Inisialisasi Midtrans
 let snapAPI = new snap({

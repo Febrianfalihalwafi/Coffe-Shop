@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Menu = require('../models/Menu');
+const Menu = require('../models/menu');
 
 // Endpoint untuk seed menu ke database
 router.post('/seed', async (req, res) => {
