@@ -187,7 +187,7 @@ export default function Hero() {
 
               {/* Contact List */}
               <div className="space-y-3">
-                <p className="group flex items-start gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
+                <div className="group flex items-start gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
                   <div className="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg border border-[#e6e1da] bg-white/50 flex items-center justify-center group-hover:border-[#7a5e3a]/40 group-hover:bg-[#faf8f5] transition-all duration-200">
                     <svg
                       className="w-4 h-4 text-[#7a5e3a]"
@@ -214,9 +214,9 @@ export default function Hero() {
                     <br />
                     Bandung, Indonesia
                   </span>
-                </p>
+                </div>
 
-                <p className="group flex items-center gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
+                <div className="group flex items-center gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
                   <div className="flex-shrink-0 w-7 h-7 rounded-lg border border-[#e6e1da] bg-white/50 flex items-center justify-center group-hover:border-[#7a5e3a]/40 group-hover:bg-[#faf8f5] transition-all duration-200">
                     <svg
                       className="w-4 h-4 text-[#7a5e3a]"
@@ -233,9 +233,9 @@ export default function Hero() {
                     </svg>
                   </div>
                   <span>+62 852 1279 3050</span>
-                </p>
+                </div>
 
-                <p className="group flex items-center gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
+                <div className="group flex items-center gap-3 text-sm text-[#4b3b2a]/80 hover:text-[#7a5e3a] transition-colors duration-200">
                   <div className="flex-shrink-0 w-7 h-7 rounded-lg border border-[#e6e1da] bg-white/50 flex items-center justify-center group-hover:border-[#7a5e3a]/40 group-hover:bg-[#faf8f5] transition-all duration-200">
                     <svg
                       className="w-4 h-4 text-[#7a5e3a]"
@@ -252,7 +252,7 @@ export default function Hero() {
                     </svg>
                   </div>
                   <span>hello@coffeetelkom.id</span>
-                </p>
+                </div>
               </div>
             </div>
 
