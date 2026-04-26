@@ -3,7 +3,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
+=======
+import { X, Mail, Lock } from "lucide-react";
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
 import { useCart } from "@/context/CartContext";
 
 const API = "http://localhost:5000/api/auth";
@@ -13,7 +17,10 @@ export function LoginContent({ onClose }) {
   const router = useRouter();
   const { closeAuthModals, login } = useCart();
   const [form, setForm] = useState({ email: "", password: "" });
+<<<<<<< HEAD
   const [showPassword, setShowPassword] = useState(false);
+=======
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -38,7 +45,11 @@ export function LoginContent({ onClose }) {
     router.push("/signup");
   };
 
+<<<<<<< HEAD
  const handleSubmit = async () => {
+=======
+  const handleSubmit = async () => {
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     setError("");
     if (!form.email || !form.password) {
       setError("Email dan password harus diisi");
@@ -55,12 +66,16 @@ export function LoginContent({ onClose }) {
       if (!res.ok) { setError(data.msg); return; }
       login(data.user, data.token);
       closeAuthModals();
+<<<<<<< HEAD
       // ← Redirect berdasarkan role
       if (data.user.role === "admin") {
         router.push("/admin/orders");
       } else {
         router.push("/menu");
       }
+=======
+      router.push("/menu");
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     } catch {
       setError("Gagal terhubung ke server");
     } finally {
@@ -126,6 +141,7 @@ export function LoginContent({ onClose }) {
           });
           const data = await res.json();
           if (!res.ok) { setError(data.msg); return; }
+<<<<<<< HEAD
           // YANG BENAR
           login(data.user, data.token);
           onClose?.();
@@ -134,6 +150,11 @@ export function LoginContent({ onClose }) {
           } else {
             router.push("/menu");
           }
+=======
+          login(data.user, data.token);
+          onClose?.();           // ganti closeAuthModals() untuk loginModal
+          router.push("/menu");
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
         } catch {
           setError("Login Google gagal");
         } finally {
@@ -221,6 +242,7 @@ export function LoginContent({ onClose }) {
           </div>
           <div className="relative">
             <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9b8b78]" />
+<<<<<<< HEAD
             <input type={showPassword ? "text" : "password"} placeholder="Password" value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -233,6 +255,13 @@ export function LoginContent({ onClose }) {
             >
               {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
 </button>
+=======
+            <input type="password" placeholder="Password" value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              className="w-full pl-9 pr-3 py-2.5 bg-[#faf7f3] border border-[#e8dfd4] rounded-lg text-xs outline-none focus:border-[#7a5e3a] focus:bg-white transition"
+            />
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
           </div>
         </div>
 

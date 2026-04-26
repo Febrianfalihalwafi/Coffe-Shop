@@ -3,7 +3,11 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+<<<<<<< HEAD
 // Easing & timing persis seperti Hero
+=======
+// 🎯 Easing & timing persis seperti Hero
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
 const modernEase = [0.22, 1, 0.36, 1];
 
 const containerVariants = {

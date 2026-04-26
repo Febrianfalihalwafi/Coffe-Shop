@@ -4,9 +4,15 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
+<<<<<<< HEAD
 // ─── Helper buat JWT (sekarang include role) ───────────────────────
 const makeToken = (userId, role) =>
   jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+=======
+// ─── Helper buat JWT ───────────────────────────────────────────────
+const makeToken = (userId) =>
+  jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
 
 // ─── POST /api/auth/register ───────────────────────────────────────
 router.post('/register', async (req, res) => {
@@ -22,11 +28,19 @@ router.post('/register', async (req, res) => {
     const hashed = await bcrypt.hash(password, salt);
     user = await User.create({ name, email, password: hashed });
 
+<<<<<<< HEAD
     const token = makeToken(user._id, user.role);
     res.json({
       msg: 'Registrasi berhasil',
       token,
       user: { id: user._id, name: user.name, email: user.email, role: user.role }, // ← tambah role
+=======
+    const token = makeToken(user._id);
+    res.json({
+      msg: 'Registrasi berhasil',
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     });
   } catch (err) {
     console.error(err);
@@ -47,11 +61,19 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: 'Email atau password salah' });
 
+<<<<<<< HEAD
     const token = makeToken(user._id, user.role);
     res.json({
       msg: 'Login berhasil',
       token,
       user: { id: user._id, name: user.name, email: user.email, role: user.role }, // ← tambah role
+=======
+    const token = makeToken(user._id);
+    res.json({
+      msg: 'Login berhasil',
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     });
   } catch (err) {
     console.error(err);
@@ -89,11 +111,19 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
 
+<<<<<<< HEAD
     const token = makeToken(user._id, user.role);
     res.json({
       msg: 'Login Google berhasil',
       token,
       user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, role: user.role }, // ← tambah role
+=======
+    const token = makeToken(user._id);
+    res.json({
+      msg: 'Login Google berhasil',
+      token,
+      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     });
   } catch (err) {
     console.error('Google auth error:', err);

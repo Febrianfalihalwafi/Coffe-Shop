@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema({
     }
   ],
   totalAmount: { type: Number, required: true },
+<<<<<<< HEAD
 
   
   queueNumber: {
@@ -21,6 +22,9 @@ const orderSchema = new mongoose.Schema({
     default: 'pending'
   },
 
+=======
+  status: { type: String, default: 'pending' },
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
   createdAt: { type: Date, default: Date.now }
 });
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const auth = require('../middleware/auth');
+<<<<<<< HEAD
 const admin = require('../middleware/admin');
 
 
@@ -30,6 +31,19 @@ router.post('/', auth, async (req, res) => {
   }
 
   try {
+=======
+
+// POST /api/order
+router.post('/', auth, async (req, res) => {
+  const { items } = req.body;
+
+  if (!items || items.length === 0)
+    return res.status(400).json({ msg: 'Items tidak boleh kosong' });
+
+  try {
+    // Hitung total dari data cart yang dikirim frontend
+    // (tidak perlu lookup ke DB karena menu ada di CartContext)
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     const processedItems = items.map((item) => ({
       name: item.name,
       price: item.price,
@@ -37,6 +51,7 @@ router.post('/', auth, async (req, res) => {
     }));
 
     const totalAmount = processedItems.reduce(
+<<<<<<< HEAD
       (sum, item) => sum + item.price * item.quantity,
       0
     );
@@ -46,11 +61,19 @@ router.post('/', auth, async (req, res) => {
     const queueNumber =
       lastOrder && lastOrder.queueNumber ? lastOrder.queueNumber + 1 : 1;
 
+=======
+      (sum, item) => sum + item.price * item.quantity, 0
+    );
+
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     const newOrder = new Order({
       userId: req.user._id,
       items: processedItems,
       totalAmount,
+<<<<<<< HEAD
       queueNumber,
+=======
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
       status: 'pending',
     });
 
@@ -62,6 +85,7 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 
 // ADMIN
 
@@ -104,3 +128,6 @@ router.put('/:id/status', auth, admin, async (req, res) => {
 
 
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf

@@ -1,16 +1,26 @@
 "use client";
 
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+=======
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { menuItems } from "@/context/CartContext";
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
 
 const API = "http://localhost:5000/api";
 
 export function CartContent({ onClose }) {
   const { cart, addToCart, updateQuantity, user, token, setShowLogin } = useCart();
   const router = useRouter();
+<<<<<<< HEAD
   const [menuItems, setMenuItems] = useState([]);
 
   // ── FETCH MENU DARI DATABASE ─────────────────────────
@@ -22,6 +32,11 @@ export function CartContent({ onClose }) {
   }, []);
 
   const handleCheckout = async () => {
+=======
+
+  const handleCheckout = async () => {
+    // Belum login — arahkan ke login dulu
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     if (!user || !token) {
       onClose?.();
       setShowLogin(true);
@@ -31,11 +46,20 @@ export function CartContent({ onClose }) {
     if (cart.length === 0) return;
 
     try {
+<<<<<<< HEAD
       const orderRes = await fetch(`${API}/order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+=======
+      // 1. Buat order — kirim items dengan name, price, quantity (tanpa productId)
+      const orderRes = await fetch(`${API}/order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
         },
         body: JSON.stringify({
           items: cart.map((item) => ({
@@ -48,6 +72,7 @@ export function CartContent({ onClose }) {
 
       const order = await orderRes.json();
       if (!orderRes.ok) {
+<<<<<<< HEAD
         alert(order.msg || "Gagal membuat order");
         return;
       }
@@ -57,12 +82,25 @@ export function CartContent({ onClose }) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+=======
+        alert(order.msg || 'Gagal membuat order');
+        return;
+      }
+
+      // 2. Buat transaksi Midtrans
+      const payRes = await fetch(`${API}/payment/midtrans`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
         },
         body: JSON.stringify({ orderId: order._id }),
       });
 
       const payData = await payRes.json();
       if (!payRes.ok) {
+<<<<<<< HEAD
         alert(payData.msg || "Gagal membuat pembayaran");
         return;
       }
@@ -79,13 +117,40 @@ export function CartContent({ onClose }) {
       }
     } catch (err) {
       alert("Gagal terhubung ke server");
+=======
+        alert(payData.msg || 'Gagal membuat pembayaran');
+        return;
+      }
+
+      // 3. Buka Midtrans Snap
+      if (window.snap) {
+        window.snap.pay(payData.token, {
+          onSuccess: () => { onClose?.(); router.push('/'); },
+          onPending: () => { onClose?.(); },
+          onError: () => alert('Pembayaran gagal'),
+          onClose: () => {},
+        });
+      } else {
+        // Fallback: redirect ke URL Midtrans
+        window.location.href = payData.redirect_url;
+      }
+    } catch (err) {
+      alert('Gagal terhubung ke server');
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
     }
   };
 
   return (
+<<<<<<< HEAD
     <div className="bg-white w-full sm:w-96 h-screen shadow-2xl flex flex-col">
 
       {/* Header */}
+=======
+    // Fix masalah 3: h-screen + flex flex-col agar footer tidak terdorong
+    <div className="bg-white w-full sm:w-96 h-screen shadow-2xl flex flex-col">
+
+      {/* Header — fixed di atas */}
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
       <div className="flex justify-between items-center px-6 py-5 border-b border-[#e6e1da] shrink-0">
         <h3 className="text-xl font-semibold text-[#3b2e23]">Your Cart</h3>
         {onClose && (
@@ -95,7 +160,11 @@ export function CartContent({ onClose }) {
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Body */}
+=======
+      {/* Body — scrollable, mengisi ruang yang tersisa */}
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
 
         {/* Items di keranjang */}
@@ -104,6 +173,7 @@ export function CartContent({ onClose }) {
         ) : (
           <>
             <h4 className="text-sm font-medium text-[#3b2e23] mb-2">In Your Cart</h4>
+<<<<<<< HEAD
             {cart.map((item) => {
               const itemId = item._id || item.id;
               return (
@@ -131,6 +201,32 @@ export function CartContent({ onClose }) {
                 </div>
               );
             })}
+=======
+            {cart.map((item) => (
+              <div key={item.id} className="flex justify-between items-center border-b pb-3">
+                <div>
+                  <h4 className="text-sm font-medium text-[#3b2e23]">{item.name}</h4>
+                  <p className="text-xs text-gray-500">
+                    Rp{item.price.toLocaleString()} × {item.quantity}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, -1)}
+                    className="w-6 h-6 flex items-center justify-center border rounded-md text-stone-600 hover:bg-stone-100"
+                  >-</button>
+                  <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, 1)}
+                    className="w-6 h-6 flex items-center justify-center border rounded-md text-stone-600 hover:bg-stone-100"
+                  >+</button>
+                  <p className="font-semibold ml-1 text-[#3b2e23] text-sm">
+                    Rp{(item.price * item.quantity).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
           </>
         )}
 
@@ -139,6 +235,7 @@ export function CartContent({ onClose }) {
           <h4 className="text-sm font-medium text-[#3b2e23] mb-3">Add More Items</h4>
           <div className="space-y-3">
             {menuItems.map((item) => (
+<<<<<<< HEAD
               <div key={item._id} className="flex items-center justify-between p-2 border rounded-lg">
                 <div className="flex items-center gap-3">
                   {item.image ? (
@@ -155,6 +252,14 @@ export function CartContent({ onClose }) {
                   <div>
                     <h5 className="text-sm font-medium text-[#3b2e23]">{item.name}</h5>
                     <p className="text-xs text-gray-500">Rp{Number(item.price).toLocaleString()}</p>
+=======
+              <div key={item.id} className="flex items-center justify-between p-2 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Image src={item.image} alt={item.name} width={40} height={40} className="rounded-md object-cover" />
+                  <div>
+                    <h5 className="text-sm font-medium text-[#3b2e23]">{item.name}</h5>
+                    <p className="text-xs text-gray-500">Rp{item.price.toLocaleString()}</p>
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
                   </div>
                 </div>
                 <button
@@ -167,7 +272,11 @@ export function CartContent({ onClose }) {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* Footer */}
+=======
+      {/* Footer — fixed di bawah, tidak ikut scroll */}
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
       <div className="px-6 py-4 border-t border-[#e6e1da] shrink-0 bg-white">
         <div className="flex justify-between items-center mb-4">
           <span className="text-lg font-semibold text-[#3b2e23]">Total</span>
@@ -176,6 +285,10 @@ export function CartContent({ onClose }) {
           </span>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* Masalah 2: checkout hanya bisa jika sudah login */}
+>>>>>>> dbf93039bff7ee776a341311335251917a043ddf
         {user ? (
           <button
             onClick={handleCheckout}
