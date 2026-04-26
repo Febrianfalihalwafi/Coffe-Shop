@@ -12,11 +12,12 @@ export default function AdminDashboardPage() {
           Kelola pesanan dan menu Coffee Telkom.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-6 mt-10">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-xl mx-auto">
           <Link
             href="/admin/orders"
-            className="bg-white border border-[#e6e1da] rounded-2xl p-8 shadow hover:shadow-md transition"
+            className="bg-white border border-[#e6e1da] rounded-2xl p-8 shadow hover:shadow-md transition block text-left"
           >
+            <div className="text-3xl mb-3">📋</div>
             <h2 className="text-2xl font-semibold">Kelola Orders</h2>
             <p className="mt-2 text-[#6f5d48]">
               Lihat pesanan dan update status.
@@ -25,8 +26,9 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/menu"
-            className="bg-white border border-[#e6e1da] rounded-2xl p-8 shadow hover:shadow-md transition"
+            className="bg-white border border-[#e6e1da] rounded-2xl p-8 shadow hover:shadow-md transition block text-left"
           >
+            <div className="text-3xl mb-3">☕</div>
             <h2 className="text-2xl font-semibold">Kelola Menu</h2>
             <p className="mt-2 text-[#6f5d48]">
               Tambah, edit, dan hapus menu.

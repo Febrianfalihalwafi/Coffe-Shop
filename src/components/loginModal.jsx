@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { X, Mail, Lock } from "lucide-react";
+import { X, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const API = "http://localhost:5000/api/auth";
@@ -13,6 +13,7 @@ export function LoginContent({ onClose }) {
   const router = useRouter();
   const { closeAuthModals, login } = useCart();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -37,7 +38,7 @@ export function LoginContent({ onClose }) {
     router.push("/signup");
   };
 
-  const handleSubmit = async () => {
+ const handleSubmit = async () => {
     setError("");
     if (!form.email || !form.password) {
       setError("Email dan password harus diisi");
@@ -54,7 +55,12 @@ export function LoginContent({ onClose }) {
       if (!res.ok) { setError(data.msg); return; }
       login(data.user, data.token);
       closeAuthModals();
-      router.push("/menu");
+      // ← Redirect berdasarkan role
+      if (data.user.role === "admin") {
+        router.push("/admin/orders");
+      } else {
+        router.push("/menu");
+      }
     } catch {
       setError("Gagal terhubung ke server");
     } finally {
@@ -120,9 +126,14 @@ export function LoginContent({ onClose }) {
           });
           const data = await res.json();
           if (!res.ok) { setError(data.msg); return; }
+          // YANG BENAR
           login(data.user, data.token);
-          onClose?.();           // ganti closeAuthModals() untuk loginModal
-          router.push("/menu");
+          onClose?.();
+          if (data.user.role === "admin") {
+            router.push("/admin/orders");
+          } else {
+            router.push("/menu");
+          }
         } catch {
           setError("Login Google gagal");
         } finally {
@@ -210,11 +221,18 @@ export function LoginContent({ onClose }) {
           </div>
           <div className="relative">
             <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9b8b78]" />
-            <input type="password" placeholder="Password" value={form.password}
+            <input type={showPassword ? "text" : "password"} placeholder="Password" value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="w-full pl-9 pr-3 py-2.5 bg-[#faf7f3] border border-[#e8dfd4] rounded-lg text-xs outline-none focus:border-[#7a5e3a] focus:bg-white transition"
+              className="w-full pl-9 pr-9 py-2.5 bg-[#faf7f3] border border-[#e8dfd4] rounded-lg text-xs outline-none focus:border-[#7a5e3a] focus:bg-white transition"
             />
+            <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b8b78]"
+            >
+              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+</button>
           </div>
         </div>
 
